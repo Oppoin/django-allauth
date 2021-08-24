@@ -10,6 +10,7 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2LoginView,
 )
 
+from .client import MicrosoftOAuth2Client
 from .provider import MicrosoftGraphProvider
 
 
@@ -32,6 +33,7 @@ def _check_errors(response):
 
 
 class MicrosoftGraphOAuth2Adapter(OAuth2Adapter):
+    client_class = MicrosoftOAuth2Client
     provider_id = MicrosoftGraphProvider.id
 
     def __init__(self, request):
