@@ -23,7 +23,7 @@ class MicrosoftOAuth2Client(OAuth2Client):
         self,
         *args, **kwargs
     ):
-        self.pkce = self._generate_pkce_code_verifier()
+        self.pkce = self._generate_pkce_code_verifier(43)
         super(MicrosoftOAuth2Client, self).__init__(*args, **kwargs)
 
     def _generate_pkce_code_verifier(length=43):
