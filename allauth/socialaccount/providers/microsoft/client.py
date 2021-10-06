@@ -41,7 +41,7 @@ class MicrosoftOAuth2Client(OAuth2Client):
             .rstrip(b"=")
         )  # Required by https://tools.ietf.org/html/rfc7636#section-3
         return {
-            "code_verifier": verifier.decode(),
+            "code_verifier": verifier,
             "transformation": "S256",  # In Python, sha256 is always available
             "code_challenge": code_challenge,
         }
