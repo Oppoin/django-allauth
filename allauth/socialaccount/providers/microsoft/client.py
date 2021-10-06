@@ -25,6 +25,7 @@ class MicrosoftOAuth2Client(OAuth2Client):
     ):
         self.pkce = self._generate_pkce_code_verifier()
         super(MicrosoftOAuth2Client, self).__init__(*args, **kwargs)
+
     def _generate_pkce_code_verifier(length=43):
         """
         Taken from https://github.com/AzureAD/microsoft-authentication-library-for-python/blob/e94dda5f8140673e55e2cd825174ee98d886857e/msal/oauth2cli/oauth2.py#L276
