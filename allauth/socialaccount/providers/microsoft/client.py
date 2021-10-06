@@ -33,16 +33,18 @@ class MicrosoftOAuth2Client(OAuth2Client):
         """
         assert 43 <= length <= 128
         verifier = "".join(  # https://tools.ietf.org/html/rfc7636#section-4.1
-            random.sample(string.ascii_letters + string.digits + "-._~", length))
+            random.sample(string.ascii_letters + string.digits + "-._~", length)
+        )
         code_challenge = (
             # https://tools.ietf.org/html/rfc7636#section-4.2
             base64.urlsafe_b64encode(hashlib.sha256(verifier.encode("ascii")).digest())
-            .rstrip(b"="))  # Required by https://tools.ietf.org/html/rfc7636#section-3
+            .rstrip(b"=")
+        )  # Required by https://tools.ietf.org/html/rfc7636#section-3
         return {
-            "code_verifier": verifier,
+            "code_verifier": verifier.decode(),
             "transformation": "S256",  # In Python, sha256 is always available
             "code_challenge": code_challenge,
-            }
+        }
 
 
     def get_redirect_url(self, authorization_url, extra_params):
@@ -54,8 +56,8 @@ class MicrosoftOAuth2Client(OAuth2Client):
             "scope": self.scope,
         }
         if self.pkce:
-            params["code_challenge"] = self.pkce["code_challenge"],
-            params["code_challenge_method"] = self.pkce["transformation"],
+            params["code_challenge"] = self.pkce["code_challenge"]
+            params["code_challenge_method"] = self.pkce["transformation"]
         if self.state:
             params["state"] = self.state
         params.update(extra_params)
