@@ -2,6 +2,7 @@ import base64
 import hashlib
 import random
 import requests
+import secrets
 import string
 from urllib.parse import parse_qsl
 
@@ -32,14 +33,14 @@ class MicrosoftOAuth2Client(OAuth2Client):
 
         """
         assert 43 <= length <= 128
-        verifier = "".join(  # https://tools.ietf.org/html/rfc7636#section-4.1
-            random.sample(string.ascii_letters + string.digits + "-._~", length)
-        )
-        code_challenge = (
-            # https://tools.ietf.org/html/rfc7636#section-4.2
-            base64.urlsafe_b64encode(hashlib.sha256(verifier.encode("ascii")).digest())
-            .rstrip(b"=")
-        )  # Required by https://tools.ietf.org/html/rfc7636#section-3
+        # verifier
+        verifier = secrets.token_urlsafe(96)[:length]
+
+        #code_challenge
+        hashed = hashlib.sha256(verifier.encode('ascii')).digest()
+        encoded = base64.urlsafe_b64encode(hashed)
+        code_challenge = encoded.decode('ascii')[:-1]
+
         return {
             "code_verifier": verifier,
             "transformation": "S256",  # In Python, sha256 is always available
@@ -71,9 +72,7 @@ class MicrosoftOAuth2Client(OAuth2Client):
             "scope": self.scope,
         }
         if self.pkce:
-            data.update(
-                {"code_verifier": self.pkce["code_verifier"]}
-            )
+            data["code_verifier"] = self.pkce["code_verifier"]
         if self.basic_auth:
             auth = requests.auth.HTTPBasicAuth(self.consumer_key, self.consumer_secret)
         else:
