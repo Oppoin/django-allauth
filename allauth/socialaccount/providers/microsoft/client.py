@@ -1,6 +1,6 @@
 import base64
 import hashlib
-import random
+import logging
 import requests
 import secrets
 import string
@@ -41,6 +41,8 @@ class MicrosoftOAuth2Client(OAuth2Client):
         encoded = base64.urlsafe_b64encode(hashed)
         code_challenge = encoded.decode('ascii')[:-1]
 
+        # print verifier here
+        logging.info("verifier at the _generate_pkce_code_verifier: " + verifier)
         return {
             "code_verifier": verifier,
             "transformation": "S256",  # In Python, sha256 is always available
@@ -86,9 +88,13 @@ class MicrosoftOAuth2Client(OAuth2Client):
         params = None
         self._strip_empty_keys(data)
         url = self.access_token_url
-        if self.access_token_method == "GET":
-            params = data
-            data = None
+
+        self.access_token_method = "POST"
+
+        # print verifier here again so we can see
+        logging.info("data just before POST", extra=data )
+        logging.info("url just before POST: " + url)
+
         # TODO: Proper exception handling
         resp = requests.request(
             self.access_token_method,
@@ -98,6 +104,8 @@ class MicrosoftOAuth2Client(OAuth2Client):
             headers=self.headers,
             auth=auth,
         )
+
+        logging.info(" just after POST ")
 
         access_token = None
         if resp.status_code in [200, 201]:
