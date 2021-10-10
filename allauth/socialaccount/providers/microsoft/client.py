@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import json
 import logging
 import requests
 import secrets
@@ -92,7 +93,9 @@ class MicrosoftOAuth2Client(OAuth2Client):
         self.access_token_method = "POST"
 
         # print verifier here again so we can see
-        logging.info("data just before POST", extra=data )
+
+        logging.info("data just before POST")
+        logging.info(json.dumps(data))
         logging.info("url just before POST: " + url)
 
         # TODO: Proper exception handling
